@@ -6,7 +6,7 @@ streamlit 설치방법: vscode -> terminal -> cmd -> pip install streamlit -> st
 지도: folium(추후 구글맵이나 카카오맵으로 변경할예정)
 데이터 수신: 해양수산부 선박위치정보(AIS) 통계정보 서비스, GPS
 
-향후 개발과정정
+개발과정
 1. ~~대시보드 생성~~
 2. ~~대시보드에 지도 추가~~
 3. ~~모의데이터로 위치정보 표시~~
