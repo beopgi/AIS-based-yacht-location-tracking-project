@@ -2,8 +2,8 @@
 streamlit는 python으로 데이터 분석을 위한 웹앱을 쉽게 만들어주는 라이브러리이다.\
 streamlit 설치방법: vscode -> terminal -> cmd -> pip install streamlit -> streamlit hello -> 자신의 매일로 로그인
 
-대시보드 실행: streamlit run APP.py
-지도: folium(추후 구글맵이나 카카오맵으로 변경할예정)
+대시보드 실행: streamlit run APP.py\
+지도: folium(추후 구글맵이나 카카오맵으로 변경할예정)\
 데이터 수신: 해양수산부 선박위치정보(AIS) 통계정보 서비스, GPS
 
 개발과정
