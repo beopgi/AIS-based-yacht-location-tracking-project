@@ -2,5 +2,6 @@ streamlit
 pandas
 requests
 folium
-streamlit_folium
-streamlit_autorefresh
+streamlit-folium
+streamlit-autorefresh
+
