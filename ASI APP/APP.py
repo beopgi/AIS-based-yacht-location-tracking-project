@@ -10,7 +10,7 @@ from streamlit_autorefresh import st_autorefresh
 def fetch_ship_data():
     # API URL 및 인증 키 설정
     url = "http://www.gicoms.go.kr/kodispub/openApi/wms.do?"
-    api_key = "key"
+    api_key = st.secrets["api"]["serviceKey"]
 
     # API 요청에 필요한 파라미터 설정
     params = {
