@@ -11,7 +11,11 @@ from streamlit_autorefresh import st_autorefresh
 def fetch_ship_data():
     # API URL 및 인증 키 설정
     url = "http://www.gicoms.go.kr/kodispub/openApi/wms.do?"
-    api_key = "key"
+    api_key = None
+    
+    # Streamlit secrets 사용 여부 확인
+    if 'api' in st.secrets and 'serviceKey' in st.secrets['api']:
+        api_key = st.secrets["api"]["serviceKey"]
 
     # API 요청에 필요한 파라미터 설정
     params = {
@@ -21,11 +25,15 @@ def fetch_ship_data():
         'pageNo': 1
     }
     try:
-        # API 호출 및 응답 처리
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()  # HTTP 오류 발생 시 예외 처리
-        data = response.json()  # JSON 데이터로 변환
-        return data.get('items', [])  # 'items' 키가 없을 경우 빈 리스트 반환
+        # API 키가 있을 경우 API 호출
+        if api_key:
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()  # HTTP 오류 발생 시 예외 처리
+            data = response.json()  # JSON 데이터로 변환
+            return data.get('items', [])  # 'items' 키가 없을 경우 빈 리스트 반환
+        else:
+            st.warning("API 키가 설정되지 않았습니다. 모의 데이터를 사용합니다.")
+            return fetch_mock_data()
     except requests.RequestException as e:
         # 요청 예외 발생 시 에러 메시지 출력 및 모의 데이터 반환
         st.error(f"API 데이터를 가져오는 데 실패했습니다. 모의 데이터를 표시합니다: {e}")
