@@ -2,6 +2,8 @@
 streamlit는 python으로 데이터 분석을 위한 웹앱을 쉽게 만들어주는 라이브러리이다.
 streamlit 설치방법: vscode -> terminal -> cmd -> pip install streamlit -> streamlit hello -> 자신의 매일로 로그인
 
+[streamlit 배포 링크](https://ais-based-yacht-location-tracking-project-9yjkzxsj8ymkkbzljzbb.streamlit.app/).
+
 대시보드 실행: streamlit run APP.py
 지도: folium(추후 구글맵이나 카카오맵으로 변경할예정)
 데이터 수신: aisstream.io(AIS), GPS
@@ -30,6 +32,8 @@ MMSI를 입력해서 해당 선박의 위치 데이터만 따로 표시가능
 MMSI를 통해 국적분류
 
 8. 대시보드 디자인, 편의성 다듬기
+
+
 
 
 
