@@ -6,6 +6,5 @@ pandas
 folium
 streamlit-folium
 nest_asyncio
-json
 
 
