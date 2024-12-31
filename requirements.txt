@@ -1,7 +1,11 @@
+asyncio
 streamlit
-pandas
+websockets
 requests
+pandas
 folium
 streamlit-folium
-streamlit-autorefresh
+nest_asyncio
+json
+
 
