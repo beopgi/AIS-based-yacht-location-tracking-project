@@ -2,9 +2,9 @@
 streamlit는 python으로 데이터 분석을 위한 웹앱을 쉽게 만들어주는 라이브러리이다.
 streamlit 설치방법: vscode -> terminal -> cmd -> pip install streamlit -> streamlit hello -> 자신의 매일로 로그인
 
-[streamlit 배포 링크](https://ais-based-yacht-location-tracking-project-9yjkzxsj8ymkkbzljzbb.streamlit.app/).
-
 대시보드 실행: streamlit run APP.py
+서버 실행: uvicorn Server:app --reload
+대시보드 밑 서버 종료: ctrl + c
 지도: folium(추후 구글맵이나 카카오맵으로 변경할예정)
 데이터 수신: aisstream.io(AIS), GPS
 
@@ -25,15 +25,11 @@ MMSI를 입력해서 해당 선박의 위치 데이터만 따로 표시가능
 5. ~~aisstream.io에 오픈 API신청~~
 6. ~~오픈 API를 통해 받은 aisstream.io AIS 데이터 편집~~
 7. ~~대시보드 지도에 AIS 위치정보 실시간으로 표시~~
-서버를 만들고 거기서 API를 받아와서 지도 상에 표시만 하면됨.
-서버를 돌릴떄 실시간 데이터 수집은 계속 돌아가겠끔하고 사용자가 웹에 접근했을때 실시간 데이터 수집을 중지하면서 지도상에 데이터를 표시하게끔 하면됨. 그리고 사용자가 실시간 데이터 수집을 다시 할수있도록 버튼은 그대로 두자자
+8. fastapi로 서버 제작
 
-나중에 우리들이 따로 서버를 만들어서 API를 뿌린다했으니까 일단 모의 데이터를 만들어서 해볼까? 모의 데이터 안에 선박의 길이 너비 같은거나 아니면 선박의 타입을 임의로 입력해서 분류 되게끔 하는거지 아니면 선박의 길이 정보만 있는데 기거서 길이와 너비를 가지고 요트만을 분류한다거나
-MMSI를 통해 국적분류
+9. 대시보드 디자인, 편의성 다듬기
 
-8. 대시보드 디자인, 편의성 다듬기
-
-
-
-
-
+국제 해양법: 선박의 길이와 폭에 따라 분류함.
+소형 선박: 길이가 20미터 이하, 폭 6미터 이하
+중형 선박: 길이가 20미터 ~ 50미터,폭이 6미터 ~ 15미터
+대형 선박: 50미터 이상, 폭 15미터 이상
