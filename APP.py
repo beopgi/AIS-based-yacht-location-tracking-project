@@ -5,13 +5,17 @@ import folium
 from streamlit_folium import st_folium
 import requests
 from streamlit_autorefresh import st_autorefresh
+import time
 
 # FastAPI 서버 URL
 API_URL = "http://localhost:8000/ships"
 
+
+@st.cache_data(ttl=10)
 def fetch_ship_data():
     """
     FastAPI 서버에서 선박 데이터를 가져오는 함수.
+    데이터를 10초 동안 캐싱합니다.
     """
     try:
         response = requests.get(API_URL)
@@ -24,7 +28,8 @@ def fetch_ship_data():
         st.error(f"데이터를 가져오는 중 오류 발생: {e}")
         return []
 
-def create_map(ship_data, center, zoom, search_query=None):
+
+def create_map(ship_data, center, zoom):
     """
     Folium 지도를 생성하고 선박 데이터를 지도에 표시합니다.
     """
@@ -67,27 +72,33 @@ def create_map(ship_data, center, zoom, search_query=None):
 
     return my_map
 
+
 def main():
-    """
-    Streamlit 앱의 메인 함수.
-    """
     st.title("AIS 기반 선박 위치 추적 대시보드")
     st.caption("실시간으로 AIS 데이터를 조회하고 선박의 상태를 확인하세요.")
 
-    # 자동 새로고침: 10초마다 페이지를 갱신
-    st_autorefresh(interval=10000)  # 10000ms = 10초
+    # 자동 새로고침: 10초마다 데이터 갱신
+    st_autorefresh(interval=10000, key="data_refresh")
 
-    # 검색어 상태 유지
+    # 검색어 상태 초기화
     if "search_query" not in st.session_state:
         st.session_state.search_query = ""
     search_query = st.sidebar.text_input("선박 이름 또는 MMSI 검색", st.session_state.search_query)
-    st.session_state.search_query = search_query  # 검색어 저장
+    st.session_state.search_query = search_query
 
     # 지도 상태 초기화
-    if "map_center" not in st.session_state:
-        st.session_state.map_center = [37.5665, 126.9780]  # 서울 중심 좌표
-    if "map_zoom" not in st.session_state:
-        st.session_state.map_zoom = 6
+    if "center" not in st.session_state:
+        st.session_state.center = [37.5665, 126.9780]  # 서울 중심 좌표
+    if "zoom" not in st.session_state:
+        st.session_state.zoom = 6
+    if "last_data" not in st.session_state:
+        st.session_state.last_data = []  # 초기 데이터 저장
+    if "last_update_time" not in st.session_state:
+        st.session_state.last_update_time = time.time()  # 마지막 상태 업데이트 시간
+
+    # 이전 지도 상태 가져오기
+    center = st.session_state.center
+    zoom = st.session_state.zoom
 
     # FastAPI 서버에서 데이터 가져오기
     ship_data = fetch_ship_data()
@@ -100,29 +111,33 @@ def main():
             if search_query_lower in ship.get("name", "").lower() or search_query in ship.get("mmsi", "")
         ]
 
-    if ship_data:
-        # 이전 지도 상태 가져오기
-        center = st.session_state.map_center
-        zoom = st.session_state.map_zoom
+    # 데이터 변경 확인
+    data_changed = ship_data != st.session_state.last_data
+    if data_changed:
+        st.session_state.last_data = ship_data  # 새로운 데이터로 업데이트
 
-        # Folium 지도 생성
-        my_map = create_map(ship_data, center, zoom, search_query)
+    # 지도 생성 및 표시
+    current_data = st.session_state.last_data if st.session_state.last_data else []  # 기존 데이터를 사용
+    my_map = create_map(current_data, center, zoom)
+    map_data = st_folium(my_map, width=800, height=600, key="unique_map_key")
 
-        # Folium 지도를 Streamlit에 표시 및 지도 상태 유지
-        map_data = st_folium(my_map, width=800, height=600, key="map")
+    # 지도 상태 업데이트: 1초 이상 가만히 있었을 경우
+    if map_data and "center" in map_data and "lat" in map_data["center"] and "lng" in map_data["center"]:
+        new_center = [map_data["center"]["lat"], map_data["center"]["lng"]]
+        new_zoom = map_data["zoom"]
 
-        # 지도 상태 업데이트 (center와 zoom 사용)
-        if map_data:
-            if "center" in map_data:
-                st.session_state.map_center = [map_data["center"]["lat"], map_data["center"]["lng"]]
-            if "zoom" in map_data:
-                st.session_state.map_zoom = map_data["zoom"]
+        current_time = time.time()
+        time_since_last_update = current_time - st.session_state.last_update_time
 
-        # 현재 상태 출력
-        st.write(f"현재 지도 중심: {st.session_state.map_center}")
-        st.write(f"현재 줌 레벨: {st.session_state.map_zoom}")
-    else:
-        st.warning("검색 결과가 없습니다. 선박 이름이나 MMSI를 확인하세요.")
+        # 1초 이상 가만히 있었을 경우에만 상태 업데이트
+        if time_since_last_update > 1 and (new_center != st.session_state.center or new_zoom != st.session_state.zoom):
+            st.session_state.center = new_center
+            st.session_state.zoom = new_zoom
+            st.session_state.last_update_time = current_time
+
+    # 상태 출력
+    st.write(f"현재 지도 중심: {st.session_state.center}")
+    st.write(f"현재 줌 레벨: {st.session_state.zoom}")
 
 
 if __name__ == "__main__":

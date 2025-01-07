@@ -17,6 +17,8 @@ streamlit 설치방법: vscode -> terminal -> cmd -> pip install streamlit -> st
 
 MMSI를 입력해서 해당 선박의 위치 데이터만 따로 표시가능
 
+[대시보드 링크](https://ais-based-yacht-location-tracking-project-9yjkzxsj8ymkkbzljzbb.streamlit.app/)
+
 개발과정
 1. ~~대시보드 생성~~
 2. ~~대시보드에 지도 추가~~
@@ -25,8 +27,7 @@ MMSI를 입력해서 해당 선박의 위치 데이터만 따로 표시가능
 5. ~~aisstream.io에 오픈 API신청~~
 6. ~~오픈 API를 통해 받은 aisstream.io AIS 데이터 편집~~
 7. ~~대시보드 지도에 AIS 위치정보 실시간으로 표시~~
-8. fastapi로 서버 제작
-
+8. ~~fastapi로 서버 제작~~
 9. 대시보드 디자인, 편의성 다듬기
 
 국제 해양법: 선박의 길이와 폭에 따라 분류함.
