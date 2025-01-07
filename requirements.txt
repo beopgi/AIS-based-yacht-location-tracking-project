@@ -1,10 +1,5 @@
-asyncio
 streamlit
-websockets
-requests
-pandas
 folium
+requests
 streamlit-folium
-nest_asyncio
-
-
+streamlit-autorefresh
