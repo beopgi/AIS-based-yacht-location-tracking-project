@@ -2,13 +2,12 @@
 streamlit는 python으로 데이터 분석을 위한 웹앱을 쉽게 만들어주는 라이브러리이다.
 streamlit 설치방법: vscode -> terminal -> cmd -> pip install streamlit -> streamlit hello -> 자신의 매일로 로그인
 
-대시보드 실행: streamlit run APP.py
 서버 실행: uvicorn Server:app --reload
 대시보드 밑 서버 종료: ctrl + c
-지도: folium(추후 구글맵이나 카카오맵으로 변경할예정)
+지도: dash_deck(추후 구글맵이나 카카오맵으로 변경할예정)
 데이터 수신: aisstream.io(AIS), GPS
 
-웹소켓이 뭔지 설명 추가가
+웹소켓이 란?
 양방향 통신: 클라이언트(예: 웹 브라우저)와 서버가 서로 데이터를 주고받을 수 있습니다. 한쪽에서 데이터를 보내면 실시간으로 다른 쪽에서 바로 받을 수 있습니다.
 
 지속적인 연결: 일반적인 HTTP 요청과 달리, 웹소켓 연결은 한번 열리면 클라이언트와 서버 간의 지속적인 연결이 유지됩니다. 이로 인해 실시간 데이터 업데이트가 가능합니다.
@@ -17,7 +16,6 @@ streamlit 설치방법: vscode -> terminal -> cmd -> pip install streamlit -> st
 
 MMSI를 입력해서 해당 선박의 위치 데이터만 따로 표시가능
 
-[대시보드 링크](https://ais-based-yacht-location-tracking-project-9yjkzxsj8ymkkbzljzbb.streamlit.app/)
 
 개발과정
 1. ~~대시보드 생성~~
@@ -28,6 +26,7 @@ MMSI를 입력해서 해당 선박의 위치 데이터만 따로 표시가능
 6. ~~오픈 API를 통해 받은 aisstream.io AIS 데이터 편집~~
 7. ~~대시보드 지도에 AIS 위치정보 실시간으로 표시~~
 8. ~~fastapi로 서버 제작~~
+--> streamlit에서 dash로 변경
 9. 대시보드 디자인, 편의성 다듬기
 
 국제 해양법: 선박의 길이와 폭에 따라 분류함.
