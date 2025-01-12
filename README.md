@@ -24,9 +24,8 @@ MMSI를 입력해서 해당 선박의 위치 데이터만 따로 표시가능
 4. ~~streamlit sharing 에서 프로그램 배포해서 URL생성~~ 
 5. ~~aisstream.io에 오픈 API신청~~
 6. ~~오픈 API를 통해 받은 aisstream.io AIS 데이터 편집~~
-7. ~~대시보드 지도에 AIS 위치정보 실시간으로 표시~~
+7. ~~대시보드 지도에 AIS 위치정보 실시간으로 표시~~ --> streamlit에서 dash로 변경
 8. ~~fastapi로 서버 제작~~
---> streamlit에서 dash로 변경
 9. 대시보드 디자인, 편의성 다듬기
 
 국제 해양법: 선박의 길이와 폭에 따라 분류함.
