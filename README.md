@@ -1,11 +1,9 @@
 ## 목표: 요트 실시간 추적 어플 만들기
-streamlit는 python으로 데이터 분석을 위한 웹앱을 쉽게 만들어주는 라이브러리이다.
-streamlit 설치방법: vscode -> terminal -> cmd -> pip install streamlit -> streamlit hello -> 자신의 매일로 로그인
 
 서버 실행: uvicorn Server:app --reload
 대시보드 밑 서버 종료: ctrl + c
 지도: dash_deck(추후 구글맵이나 카카오맵으로 변경할예정)
-데이터 수신: aisstream.io(AIS), GPS
+데이터 수신: aisstream.io(AIS)
 
 웹소켓이 란?
 양방향 통신: 클라이언트(예: 웹 브라우저)와 서버가 서로 데이터를 주고받을 수 있습니다. 한쪽에서 데이터를 보내면 실시간으로 다른 쪽에서 바로 받을 수 있습니다.
