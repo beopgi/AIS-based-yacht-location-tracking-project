@@ -98,7 +98,7 @@ app.layout = html.Div(
                         "zIndex": "1",
                     },
                     data={},
-                    tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}"},
+                    tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}\nType: {Type}"},
                 ),
                 dcc.Interval(
                     id="interval-component",
@@ -135,6 +135,8 @@ def create_layers(ship_data, search_query=None):
                 "mmsi": ship.get("mmsi", "Unknown"),
                 "sog": ship.get("sog", 0),
                 "cog": ship.get("cog", 0),
+                "Type": ship.get("Type", 0),
+                "true_heading": ship.get("true_heading", 0),
                 "status": ship.get("navigational_status", "Unknown"),
                 "icon": {
                     "url": ARROW_ICON_URL,
@@ -189,7 +191,7 @@ def update_map(n_intervals, n_clicks, search_query):
         deck = pdk.Deck(
             layers=layers,
             initial_view_state=initial_view,
-            tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}"},
+            tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}\nType: {Type}"},
         )
         return deck.to_json(), f"검색 결과: {result_count}개"
 
@@ -198,7 +200,7 @@ def update_map(n_intervals, n_clicks, search_query):
     deck = pdk.Deck(
         layers=layers,
         initial_view_state=initial_view,
-        tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}"},
+        tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}\nType: {Type}"},
     )
     return deck.to_json(), "실시간 데이터 표시 중"
 
