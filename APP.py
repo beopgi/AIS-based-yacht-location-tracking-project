@@ -6,6 +6,7 @@ import pydeck as pdk
 import json
 import websocket
 import threading
+import time
 
 # 화살표 아이콘 URL
 ARROW_ICON_URL = "/assets/blue_arrow.png"
@@ -24,16 +25,22 @@ initial_view = pdk.ViewState(
 # 실시간 데이터 저장 변수
 real_time_data = []
 
-# WebSocket 연결 설정
+# WebSocket 연결 설정 및 자동 재연결 기능 추가
 def websocket_listener():
     global real_time_data
-    ws = websocket.WebSocketApp(
-        "ws://localhost:8000/ws",  # WebSocket 서버 주소
-        on_message=lambda ws, msg: on_message(ws, msg),
-        on_error=lambda ws, err: print(f"WebSocket 오류: {err}"),
-        on_close=lambda ws, close_status, msg: print("WebSocket 연결 종료"),
-    )
-    ws.run_forever()
+    while True:
+        try:
+            ws = websocket.WebSocketApp(
+                "ws://localhost:8000/ws",  # WebSocket 서버 주소
+                on_message=lambda ws, msg: on_message(ws, msg),
+                on_error=lambda ws, err: print(f"❌ [WebSocket 오류] {err}"),
+                on_close=lambda ws, close_status, msg: print("🔴 [WebSocket 연결 종료], 재연결 시도 중..."),
+            )
+            print("🟢 [WebSocket 연결 시도] 서버에 연결 중...")
+            ws.run_forever()
+        except Exception as e:
+            print(f"❌ [WebSocket 연결 실패] {e}, 5초 후 재연결 시도")
+        time.sleep(5)  # 재연결을 위한 대기 시간
 
 def on_message(ws, message):
     """
@@ -53,7 +60,6 @@ thread.start()
 app.layout = html.Div(
     style={"height": "100vh", "width": "100vw", "display": "flex", "flexDirection": "column"},
     children=[
-        # 상단 검색 영역
         html.Div(
             style={
                 "height": "60px",
@@ -74,10 +80,9 @@ app.layout = html.Div(
                 html.Button(
                     "검색", id="search-button", n_clicks=0, style={"marginLeft": "10px", "padding": "10px"}
                 ),
-                html.Div(id="search-status", style={"marginLeft": "20px", "color": "white"}),  # 검색 상태 표시
+                html.Div(id="search-status", style={"marginLeft": "20px", "color": "white"}),
             ],
         ),
-        # 지도 영역
         html.Div(
             id="map-container",
             style={
@@ -98,7 +103,7 @@ app.layout = html.Div(
                         "zIndex": "1",
                     },
                     data={},
-                    tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}\nType: {Type}"},
+                    tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}\nType: {ship_type}\ntime_utc: {time_utc}"},
                 ),
                 dcc.Interval(
                     id="interval-component",
@@ -110,13 +115,7 @@ app.layout = html.Div(
     ],
 )
 
-# Pydeck Layer 생성
 def create_layers(ship_data, search_query=None):
-    """
-    ship_data: 실시간으로 수신된 선박 데이터 (리스트 형식)
-    search_query: 검색어 (MMSI 또는 선박 이름)
-    """
-    # 검색 결과 필터링
     if search_query:
         search_query_lower = search_query.lower()
         filtered_data = [
@@ -125,6 +124,7 @@ def create_layers(ship_data, search_query=None):
         ]
     else:
         filtered_data = ship_data
+    filtered_data = [ship for ship in filtered_data if ship.get("latitude") and ship.get("longitude")]
 
     icon_layer = pdk.Layer(
         "IconLayer",
@@ -135,9 +135,10 @@ def create_layers(ship_data, search_query=None):
                 "mmsi": ship.get("mmsi", "Unknown"),
                 "sog": ship.get("sog", 0),
                 "cog": ship.get("cog", 0),
-                "Type": ship.get("Type", 0),
+                "ship_type": ship.get("ship_type", "Unknown"),
                 "true_heading": ship.get("true_heading", 0),
                 "status": ship.get("navigational_status", "Unknown"),
+                "time_utc": ship.get("time_utc", "Unknown"),
                 "icon": {
                     "url": ARROW_ICON_URL,
                     "width": 128,
@@ -153,16 +154,8 @@ def create_layers(ship_data, search_query=None):
         size_scale=15,
         pickable=True,
     )
+    return [icon_layer]
 
-    tile_layer = pdk.Layer(
-        "TileLayer",
-        data="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        get_tile_url_params={"s": "a"},
-    )
-
-    return [tile_layer, icon_layer], len(filtered_data)
-
-# Dash 콜백: 지도 데이터 업데이트
 @app.callback(
     Output("deck-gl", "data"),
     Output("search-status", "children"),
@@ -177,31 +170,8 @@ def update_map(n_intervals, n_clicks, search_query):
         deck = pdk.Deck(initial_view_state=initial_view)
         return deck.to_json(), "실시간 데이터 없음"
 
-    # 검색 조건 확인
-    if n_clicks and search_query:
-        search_query_lower = search_query.lower()
-        filtered_data = [
-            ship for ship in real_time_data
-            if str(ship.get("mmsi", "")) == search_query or search_query_lower == ship.get("name", "").lower()
-        ]
-        if not filtered_data:
-            return pdk.Deck(initial_view_state=initial_view).to_json(), "검색 결과 없음"
-
-        layers, result_count = create_layers(filtered_data)
-        deck = pdk.Deck(
-            layers=layers,
-            initial_view_state=initial_view,
-            tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}\nType: {Type}"},
-        )
-        return deck.to_json(), f"검색 결과: {result_count}개"
-
-    # 검색 조건이 없을 경우 전체 데이터를 표시
-    layers, _ = create_layers(real_time_data)
-    deck = pdk.Deck(
-        layers=layers,
-        initial_view_state=initial_view,
-        tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}\nType: {Type}"},
-    )
+    layers = create_layers(real_time_data, search_query)
+    deck = pdk.Deck(layers=layers, initial_view_state=initial_view)
     return deck.to_json(), "실시간 데이터 표시 중"
 
 if __name__ == "__main__":
