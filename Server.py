@@ -91,6 +91,7 @@ async def fetch_position_data():
                                 "navigational_status": get_navigational_status_text(ais_message.get("NavigationalStatus", "Unknown")),
                                 "time_utc": meta_data.get("time_utc", "Unknown"),
                                 "ship_type": "Unknown",
+                                "Type" : 0,
                             }
                     print(f"🟢 [실시간 위치 데이터 수신] MMSI: {mmsi}, 위치: ({ais_message['Latitude']}, {ais_message['Longitude']})")
         except Exception as e:
@@ -116,6 +117,7 @@ async def fetch_ship_static_data():
                 while True:
                     message = await websocket.recv()
                     data = json.loads(message)
+                    #print("📜 [DEBUG] ShipStaticData 전체 데이터:", json.dumps(data, indent=4, ensure_ascii=False))
 
                     if "MessageType" not in data or data["MessageType"] != "ShipStaticData":
                         continue
@@ -127,13 +129,14 @@ async def fetch_ship_static_data():
                     DimensionC = Dimension.get("C", 0)
                     DimensionD = Dimension.get("D", 0)
                     ship_type = get_ship_type_text(DimensionA, DimensionB, DimensionC, DimensionD)
-
+                    Type = ship_static_data.get("Type", 0)
                     meta_data = data["MetaData"]
                     mmsi = meta_data.get("MMSI", "Unknown")
 
                     async with live_data_lock:
                         if mmsi in live_data:
                             live_data[mmsi]["ship_type"] = ship_type
+                            live_data[mmsi]["Type"] = Type
                         else:
                             live_data[mmsi] = {
                                 "mmsi": mmsi,
@@ -146,8 +149,9 @@ async def fetch_ship_static_data():
                                 "navigational_status": "Unknown",
                                 "time_utc": "Unknown",
                                 "ship_type": ship_type,
+                                "Type" : Type,
                             }
-                    print(f"🔵 [선박 정적 데이터 수신] MMSI: {mmsi}, Type: {ship_type}")
+                    print(f"🔵 [선박 정적 데이터 수신] MMSI: {mmsi}, Type: {Type}")
         except Exception as e:
             print(f"❌ [선박 정적 데이터 오류] {e} | 5초 후 재연결 시도")
             await asyncio.sleep(5)
