@@ -1,5 +1,8 @@
-streamlit
-folium
-requests
-streamlit-folium
-streamlit-autorefresh
+fastapi
+websockets
+uvicorn
+dash
+dash-deck
+pydeck
+websocket-client
+

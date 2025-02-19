@@ -103,7 +103,7 @@ app.layout = html.Div(
                         "zIndex": "1",
                     },
                     data={},
-                    tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}\nType: {ship_type}\ntime_utc: {time_utc}"},
+                    tooltip={"text": "{name}\nMMSI: {mmsi}\nSOG: {sog} knots\nCOG: {cog}\nStatus: {status}\nship_type: {ship_type}\ntime_utc: {time_utc}\nType_number: {Type_number}"},
                 ),
                 dcc.Interval(
                     id="interval-component",
@@ -136,6 +136,7 @@ def create_layers(ship_data, search_query=None):
                 "sog": ship.get("sog", 0),
                 "cog": ship.get("cog", 0),
                 "ship_type": ship.get("ship_type", "Unknown"),
+                "Type_number": ship.get("Type", 0),
                 "true_heading": ship.get("true_heading", 0),
                 "status": ship.get("navigational_status", "Unknown"),
                 "time_utc": ship.get("time_utc", "Unknown"),
