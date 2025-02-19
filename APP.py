@@ -31,7 +31,7 @@ def websocket_listener():
     while True:
         try:
             ws = websocket.WebSocketApp(
-                "ws://localhost:8000/ws",  # WebSocket 서버 주소
+                "ws://0.0.0.0:8000/ws",  # WebSocket 서버 주소
                 on_message=lambda ws, msg: on_message(ws, msg),
                 on_error=lambda ws, err: print(f"❌ [WebSocket 오류] {err}"),
                 on_close=lambda ws, close_status, msg: print("🔴 [WebSocket 연결 종료], 재연결 시도 중..."),
@@ -176,4 +176,4 @@ def update_map(n_intervals, n_clicks, search_query):
     return deck.to_json(), "실시간 데이터 표시 중"
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(host="0.0.0.0", port=8050, debug=True)
