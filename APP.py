@@ -124,7 +124,13 @@ def create_layers(ship_data, search_query=None):
         ]
     else:
         filtered_data = ship_data
-    filtered_data = [ship for ship in filtered_data if ship.get("latitude") and ship.get("longitude")]
+        
+    # 좌표가 없는 선박 필터링 (None, 0.0, "Unknown" 제거)
+    filtered_data = [
+        ship for ship in filtered_data 
+        if ship.get("latitude") not in [None, "Unknown", 0.0] 
+        and ship.get("longitude") not in [None, "Unknown", 0.0]
+    ]
 
     icon_layer = pdk.Layer(
         "IconLayer",
