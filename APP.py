@@ -8,7 +8,7 @@ import websocket
 import threading
 import time
 
-WEBSOCKET_SERVER = "ws://14.63.214.199:8000/ws"  # WebSocket 연결
+WEBSOCKET_SERVER = "ws://14.63.214.199:8080/ws"  # WebSocket 연결
 
 # 화살표 아이콘 URL
 ARROW_ICON_URL = "/assets/blue_arrow.png"
