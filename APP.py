@@ -8,6 +8,8 @@ import websocket
 import threading
 import time
 
+WEBSOCKET_SERVER = "ws://14.63.214.199:8000/ws"  # WebSocket 연결
+
 # 화살표 아이콘 URL
 ARROW_ICON_URL = "/assets/blue_arrow.png"
 
@@ -31,7 +33,7 @@ def websocket_listener():
     while True:
         try:
             ws = websocket.WebSocketApp(
-                "ws://0.0.0.0:8000/ws",  # WebSocket 서버 주소
+                WEBSOCKET_SERVER,  # WebSocket 서버 주소
                 on_message=lambda ws, msg: on_message(ws, msg),
                 on_error=lambda ws, err: print(f"❌ [WebSocket 오류] {err}"),
                 on_close=lambda ws, close_status, msg: print("🔴 [WebSocket 연결 종료], 재연결 시도 중..."),

@@ -1,9 +1,9 @@
-name: Build and Push Docker Image
+name: Build, Push, and Deploy
 
 on:
   push:
     branches:
-      - main  # main 브랜치에 push될 때 실행
+      - main
 
 jobs:
   build:
@@ -19,12 +19,26 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Docker 이미지 빌드 및 태깅
+      - name: Docker 이미지 빌드 및 푸시
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/ais-tracking:latest .
-          docker tag ${{ secrets.DOCKER_USERNAME }}/ais-tracking:latest ${{ secrets.DOCKER_USERNAME }}/ais-tracking:v1.0
-
-      - name: Docker Hub에 푸시
-        run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/ais-tracking:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/ais-tracking:v1.0
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: KT 클라우드 서버로 배포
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.CLOUD_HOST }}
+          port: ${{ secrets.CLOUD_PORT }}
+          username: ${{ secrets.CLOUD_USERNAME }}
+          password: ${{ secrets.CLOUD_PASSWORD }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/ais-tracking:latest
+            docker stop ais-tracking || true
+            docker rm ais-tracking || true
+            docker run -d --restart=always --name ais-tracking -p 8000:8000 -p 8050:8050 ${{ secrets.DOCKER_USERNAME }}/ais-tracking:latest
+
