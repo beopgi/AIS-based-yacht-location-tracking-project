@@ -16,12 +16,12 @@ ARROW_ICON_URL = "/assets/blue_arrow.png"
 # Dash 앱 초기화
 app = Dash(__name__)
 
-# 초기 View 설정
+# 지도 초기 좌표(부산)
 initial_view = pdk.ViewState(
-    latitude=37.5665,  # 서울 중심 좌표
-    longitude=126.9780,
-    zoom=6,
-    pitch=0,
+    latitude=35.112697,  
+    longitude=129.124049,  
+    zoom=11, 
+    pitch=0, 
 )
 
 # 실시간 데이터 저장 변수

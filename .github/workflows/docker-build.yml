@@ -40,5 +40,5 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/ais-tracking:latest
             docker stop ais-tracking || true
             docker rm ais-tracking || true
-            docker run -d --restart=always --name ais-tracking -p 8000:8000 -p 8050:8050 ${{ secrets.DOCKER_USERNAME }}/ais-tracking:latest
+            docker run -d --restart=always --name ais-tracking -p 8080:8080 -p 8050:8050 ${{ secrets.DOCKER_USERNAME }}/ais-tracking:latest
 
